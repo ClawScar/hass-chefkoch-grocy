@@ -4,7 +4,7 @@ from __future__ import annotations
 
 DOMAIN = "chefkoch_grocy"
 NAME = "Chefkoch → Grocy"
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 
 CONF_URL = "url"
 CONF_API_KEY = "api_key"

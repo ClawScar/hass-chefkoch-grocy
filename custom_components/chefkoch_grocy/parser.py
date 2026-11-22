@@ -54,6 +54,7 @@ class Recipe:
     # (section heading or None, step text)
     instructions: list[tuple[str | None, str]] = field(default_factory=list)
     total_time: str | None = None
+    difficulty: str | None = None
     category: str | None = None
     keywords: list[str] = field(default_factory=list)
     image_url: str | None = None
@@ -296,6 +297,7 @@ def parse_recipe_html(page: str, url: str | None = None) -> Recipe:
         ingredients=_text_list(node.get("recipeIngredient")),
         instructions=_instructions(node.get("recipeInstructions")),
         total_time=format_duration(_text(node.get("totalTime")) or None),
+        difficulty=_first(node.get("difficulty")),
         category=_first(node.get("recipeCategory")),
         keywords=keywords,
         image_url=_image_url(node.get("image")),
@@ -305,43 +307,64 @@ def parse_recipe_html(page: str, url: str | None = None) -> Recipe:
 
 
 def to_grocy_description(recipe: Recipe) -> str:
-    """Build the Grocy recipe description (Markdown) from a parsed recipe."""
-    blocks: list[str] = []
+    """Build the Grocy recipe description (HTML) from a parsed recipe.
+
+    Grocy renders the description as HTML, so headings, lists and the info
+    block stay readable instead of showing raw Markdown characters.
+    """
+    lines: list[str] = ['<div class="container">']
+    lines.append(f"  <h1>{html_lib.escape(recipe.name)}</h1>")
+
+    info: list[str] = []
+    if recipe.servings:
+        info.append(f"  <strong>Portionen:</strong> {recipe.servings}<br>")
+    if recipe.total_time:
+        info.append(f"  <strong>Gesamtzeit:</strong> {html_lib.escape(recipe.total_time)}<br>")
+    if recipe.difficulty:
+        info.append(
+            f"  <strong>Schwierigkeit:</strong> {html_lib.escape(recipe.difficulty)}<br>"
+        )
+    if info:
+        lines.append('  <div class="info">')
+        lines.extend(info)
+        lines.append("  </div>")
 
     if recipe.description:
-        blocks.append(recipe.description)
-
-    meta: list[str] = []
-    if recipe.total_time:
-        meta.append(f"**Zeit:** {recipe.total_time}")
-    if recipe.servings:
-        meta.append(f"**Portionen:** {recipe.servings}")
-    if recipe.category:
-        meta.append(f"**Kategorie:** {recipe.category}")
-    if recipe.author:
-        meta.append(f"**Autor:** {recipe.author}")
-    if recipe.source_url:
-        meta.append(f"**Quelle:** [chefkoch.de]({recipe.source_url})")
-    if meta:
-        blocks.append("  \n".join(meta))
+        lines.append(f"  <p>{html_lib.escape(recipe.description)}</p>")
 
     if recipe.ingredients:
-        lines = [f"## Zutaten ({recipe.servings} Portionen)"]
-        lines.extend(f"- {ingredient}" for ingredient in recipe.ingredients)
-        blocks.append("\n".join(lines))
+        lines.append("")
+        lines.append("  <h2>Zutaten</h2>")
+        lines.append("  <ul>")
+        lines.extend(f"    <li>{html_lib.escape(item)}</li>" for item in recipe.ingredients)
+        lines.append("  </ul>")
 
     if recipe.instructions:
-        lines = ["## Zubereitung"]
+        lines.append("")
+        lines.append("  <h2>Zubereitung</h2>")
         current_section: str | None = None
-        number = 0
+        list_open = False
         for section, text in recipe.instructions:
             if section and section != current_section:
-                lines.append("")
-                lines.append(f"**{section}**")
-                lines.append("")
+                if list_open:
+                    lines.append("  </ol>")
+                lines.append(f"  <h3>{html_lib.escape(section)}</h3>")
+                lines.append("  <ol>")
+                list_open = True
                 current_section = section
-            number += 1
-            lines.append(f"{number}. {text}")
-        blocks.append("\n".join(lines))
+            elif not list_open:
+                lines.append("  <ol>")
+                list_open = True
+            lines.append(f"    <li>{html_lib.escape(text)}</li>")
+        if list_open:
+            lines.append("  </ol>")
 
-    return "\n\n".join(blocks).strip()
+    if recipe.source_url:
+        link = html_lib.escape(recipe.source_url, quote=True)
+        lines.append("")
+        lines.append(
+            f'  <p><small>Quelle: <a href="{link}">chefkoch.de</a></small></p>'
+        )
+
+    lines.append("</div>")
+    return "\n".join(lines)

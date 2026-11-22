@@ -73,20 +73,37 @@ class ParseChefkochPageTest(unittest.TestCase):
         with self.assertRaises(ck.RecipeParseError):
             ck.parse_recipe_html("<html><body>Nichts</body></html>")
 
-    def test_grocy_description_markdown(self) -> None:
+    def test_grocy_description_html(self) -> None:
         page = (FIXTURES / "chefkoch_kaesespaetzle.html").read_text(encoding="utf-8")
         recipe = ck.parse_recipe_html(page, "https://www.chefkoch.de/rezepte/15845/Kaesespaetzle.html")
         description = ck.to_grocy_description(recipe)
 
-        self.assertIn("**Zeit:** 50 Min.", description)
-        self.assertIn("**Portionen:** 4", description)
-        self.assertIn("**Quelle:** [chefkoch.de](https://www.chefkoch.de/rezepte/15845/Kaesespaetzle.html)", description)
-        self.assertIn("## Zutaten (4 Portionen)", description)
-        self.assertIn("- 200 g Bergkäse, gerieben", description)
-        self.assertIn("## Zubereitung", description)
-        self.assertIn("**Spätzle**", description)
-        self.assertIn("1. Mehl, Eier und Salz zu einem zähen Teig verkneten.", description)
-        self.assertIn("3. Schichten, mit Käse bestreuen und überbacken.", description)
+        self.assertTrue(description.startswith('<div class="container">'))
+        self.assertTrue(description.endswith("</div>"))
+        self.assertIn("<h1>Käsespätzle</h1>", description)
+        self.assertIn("<strong>Portionen:</strong> 4", description)
+        self.assertIn("<strong>Gesamtzeit:</strong> 50 Min.", description)
+        self.assertIn("<h2>Zutaten</h2>", description)
+        self.assertIn("<li>200 g Bergkäse, gerieben</li>", description)
+        self.assertIn("<h2>Zubereitung</h2>", description)
+        self.assertIn("<h3>Spätzle</h3>", description)
+        self.assertIn("<li>Mehl, Eier und Salz zu einem zähen Teig verkneten.</li>", description)
+        self.assertIn("<li>Schichten, mit Käse bestreuen und überbacken.</li>", description)
+        self.assertIn(
+            'Quelle: <a href="https://www.chefkoch.de/rezepte/15845/Kaesespaetzle.html">chefkoch.de</a>',
+            description,
+        )
+        # no leftover Markdown syntax from the previous format
+        self.assertNotIn("**", description)
+        self.assertNotIn("## ", description)
+
+    def test_grocy_description_escapes_html(self) -> None:
+        recipe = ck.Recipe(name="A & B <script>", ingredients=["1 < 2 & 200 g Mehl"])
+        description = ck.to_grocy_description(recipe)
+
+        self.assertIn("<h1>A &amp; B &lt;script&gt;</h1>", description)
+        self.assertIn("<li>1 &lt; 2 &amp; 200 g Mehl</li>", description)
+        self.assertNotIn("<script>", description)
 
     def test_duration_formatting(self) -> None:
         self.assertEqual(ck.format_duration("PT1H30M"), "1 Std. 30 Min.")
