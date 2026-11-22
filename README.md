@@ -18,7 +18,7 @@ Lagerbestände** in Grocy erzeugt – genau so, wie es für eine reine Rezeptsam
 
 ## Voraussetzungen
 
-- Home Assistant 2024.7 oder neuer
+- Home Assistant 2026.11 oder neuer
 - Grocy-Add-on (oder eine andere Grocy-Instanz) mit API-Zugriff
 - Internetzugang aus dem Heimnetz (Chefkoch blockt Rechenzentrums-/VPN-IPs)
 

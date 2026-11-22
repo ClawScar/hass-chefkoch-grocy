@@ -2,6 +2,7 @@
   "domain": "chefkoch_grocy",
   "name": "Chefkoch to Grocy",
   "codeowners": [],
+  "categories": ["productivity_information.shopping_groceries"],
   "config_flow": true,
   "dependencies": ["frontend", "http"],
   "documentation": "https://github.com/ClawScar/hass-chefkoch-grocy#readme",
