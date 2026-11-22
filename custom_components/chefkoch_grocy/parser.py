@@ -38,6 +38,17 @@ _SCORED_KEYS = (
     "author",
 )
 
+# chefkoch.de appends promotional sentences to the JSON-LD description, e.g.
+# "Über 1684 Bewertungen und für sehr gut befunden. Mit ► Portionsrechner …".
+_PROMO_MARKERS = (
+    "bewertungen",
+    "für sehr gut befunden",
+    "portionsrechner",
+    "kochbuch",
+    "video-tipps",
+    "►",
+)
+
 
 class RecipeParseError(Exception):
     """Raised when a page does not contain usable recipe data."""
@@ -242,6 +253,40 @@ def _first(value: Any) -> str | None:
     return None
 
 
+def _clean_description(text: str) -> str:
+    """Drop the promotional sentences chefkoch.de appends to the description."""
+    if not text:
+        return ""
+    kept: list[str] = []
+    for sentence in re.split(r"(?<=[.!?])\s+", text):
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+        if any(marker in sentence.casefold() for marker in _PROMO_MARKERS):
+            continue
+        kept.append(sentence)
+    return " ".join(kept)
+
+
+def _strip_author(name: str, author: str | None) -> str:
+    """Remove ``von <author>`` (the recipe's creator) from the title."""
+    if not name:
+        return name
+    if author:
+        stripped = re.sub(
+            rf"\s+von\s+{re.escape(author)}\s*$", "", name, flags=re.IGNORECASE
+        )
+        if stripped != name:
+            return stripped.strip()
+
+    # Without an author field, only strip a trailing "von Firstname Lastname".
+    return re.sub(
+        r"\s+von\s+[A-ZÄÖÜ][\wäöüß.\-]*(?:\s+[A-ZÄÖÜ][\wäöüß.\-]*){1,2}\s*$",
+        "",
+        name,
+    ).strip()
+
+
 def _fallback_name(page: str) -> str:
     match = _TITLE_RE.search(page or "")
     if not match:
@@ -279,7 +324,9 @@ def parse_recipe_html(page: str, url: str | None = None) -> Recipe:
         )
     node = max(nodes, key=_score)
 
+    author = _first(node.get("author"))
     name = _text(node.get("name")) or _fallback_name(page)
+    name = _strip_author(name, author)
     if not name:
         raise RecipeParseError("Das Rezept hat keinen Namen.")
 
@@ -292,7 +339,7 @@ def parse_recipe_html(page: str, url: str | None = None) -> Recipe:
 
     return Recipe(
         name=name,
-        description=_text(node.get("description")),
+        description=_clean_description(_text(node.get("description"))),
         servings=_servings(node.get("recipeYield")) or DEFAULT_SERVINGS,
         ingredients=_text_list(node.get("recipeIngredient")),
         instructions=_instructions(node.get("recipeInstructions")),
@@ -301,7 +348,7 @@ def parse_recipe_html(page: str, url: str | None = None) -> Recipe:
         category=_first(node.get("recipeCategory")),
         keywords=keywords,
         image_url=_image_url(node.get("image")),
-        author=_first(node.get("author")),
+        author=author,
         source_url=url,
     )
 

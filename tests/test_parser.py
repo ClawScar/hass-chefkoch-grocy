@@ -29,6 +29,22 @@ MINIMAL_PAGE = """
 """
 
 
+TITLED_PAGE = """
+<html><head><title>Käsespätzle von Oma Hilde | Chefkoch</title>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  "name": "Käsespätzle von Oma Hilde",
+  "author": { "@type": "Person", "name": "Oma Hilde" },
+  "description": "Cremig und einfach. Über 1684 Bewertungen und für sehr gut befunden. Mit ► Portionsrechner ► Kochbuch ► Video-Tipps!",
+  "recipeIngredient": ["500 g Mehl"],
+  "recipeInstructions": "Teig kneten."
+}
+</script></head><body></body></html>
+"""
+
+
 class ParseChefkochPageTest(unittest.TestCase):
     def test_full_page_with_graph_and_sections(self) -> None:
         page = (FIXTURES / "chefkoch_kaesespaetzle.html").read_text(encoding="utf-8")
@@ -104,6 +120,28 @@ class ParseChefkochPageTest(unittest.TestCase):
         self.assertIn("<h1>A &amp; B &lt;script&gt;</h1>", description)
         self.assertIn("<li>1 &lt; 2 &amp; 200 g Mehl</li>", description)
         self.assertNotIn("<script>", description)
+
+    def test_title_and_description_cleanup(self) -> None:
+        recipe = ck.parse_recipe_html(
+            TITLED_PAGE, "https://www.chefkoch.de/rezepte/2/Kaesespaetzle.html"
+        )
+
+        # the creator is not part of the recipe title any more
+        self.assertEqual(recipe.name, "Käsespätzle")
+        self.assertEqual(recipe.author, "Oma Hilde")
+        # the promotional sentences are dropped, the real text stays
+        self.assertEqual(recipe.description, "Cremig und einfach.")
+
+        description = ck.to_grocy_description(recipe)
+        self.assertIn("<h1>Käsespätzle</h1>", description)
+        self.assertNotIn("Bewertungen", description)
+        self.assertNotIn("Portionsrechner", description)
+        self.assertNotIn("Video-Tipps", description)
+
+    def test_title_strips_author_without_author_field(self) -> None:
+        self.assertEqual(ck._strip_author("Käsespätzle von Oma Hilde", None), "Käsespätzle")
+        # ordinary titles keep their "von"
+        self.assertEqual(ck._strip_author("Schnitzel von der Pute", None), "Schnitzel von der Pute")
 
     def test_duration_formatting(self) -> None:
         self.assertEqual(ck.format_duration("PT1H30M"), "1 Std. 30 Min.")
