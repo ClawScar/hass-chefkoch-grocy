@@ -155,6 +155,7 @@ custom_components/chefkoch_grocy/
 ├── parser.py                       JSON-LD-Parser (nur Standardbibliothek)
 ├── grocy.py                        Grocy-REST-Client
 ├── const.py                        Konstanten
+├── brand/icon.png                  Icon (256×256) für Home Assistant und HACS
 ├── manifest.json
 ├── services.yaml
 ├── strings.json / translations/    Übersetzungen (de, en)

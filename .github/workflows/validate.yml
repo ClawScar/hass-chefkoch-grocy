@@ -29,6 +29,3 @@ jobs:
         uses: hacs/action@main
         with:
           category: integration
-          # This integration is not part of home-assistant/brands, so the
-          # brands check can never pass for a custom component.
-          ignore: brands
