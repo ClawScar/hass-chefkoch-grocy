@@ -271,11 +271,16 @@ async def _async_attach_picture(
 _FRONTEND_FLAG = "chefkoch_grocy_frontend_registered"
 
 
+async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
+    """Register the Lovelace card before any config entry is set up."""
+    await _async_register_frontend(hass)
+    return True
+
+
 async def _async_register_frontend(hass: HomeAssistant) -> None:
     """Serve and register the bundled Lovelace card."""
     if hass.data.get(_FRONTEND_FLAG):
         return
-    hass.data[_FRONTEND_FLAG] = True
 
     card_path = str(Path(__file__).parent / "frontend" / "chefkoch-grocy-card.js")
     try:
@@ -288,3 +293,5 @@ async def _async_register_frontend(hass: HomeAssistant) -> None:
         add_extra_js_url(hass, f"{FRONTEND_URL}?v={VERSION}")
     except Exception:  # noqa: BLE001 - the card is optional, never break setup
         _LOGGER.exception("Die Lovelace-Karte konnte nicht registriert werden")
+    else:
+        hass.data[_FRONTEND_FLAG] = True
