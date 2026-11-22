@@ -1,0 +1,47 @@
+import_recipe:
+  name: Rezept von Chefkoch importieren
+  description: >-
+    Importiert ein oder mehrere Rezepte von chefkoch.de in Grocy. Es wird nur das
+    Rezept angelegt (Name, Portionen, Zutaten und Zubereitung im Beschreibungstext),
+    es werden keine Produkte oder Zutaten in Grocy gepflegt.
+  fields:
+    url:
+      name: Chefkoch-URL
+      description: >-
+        Link zum Rezept. Für mehrere Rezepte einfach mehrere URLs durch Leerzeichen
+        oder Zeilenumbrüche trennen.
+      required: true
+      example: https://www.chefkoch.de/rezepte/15845/Kaesespaetzle.html
+      selector:
+        text:
+    existing:
+      name: Vorhandenes Rezept
+      description: Verhalten, wenn in Grocy bereits ein Rezept mit gleichem Namen existiert.
+      default: skip
+      selector:
+        select:
+          translation_key: existing
+          options:
+            - skip
+            - overwrite
+            - create
+    picture:
+      name: Titelbild übernehmen
+      description: Rezeptbild von Chefkoch herunterladen und in Grocy ablegen.
+      default: true
+      selector:
+        boolean:
+    servings:
+      name: Portionen
+      description: Anzahl der Portionen überschreiben (Standard ist die Angabe von Chefkoch).
+      selector:
+        number:
+          min: 1
+          max: 99
+          mode: box
+    entry_id:
+      name: Grocy-Instanz
+      description: Nur nötig, wenn mehrere Grocy-Instanzen eingerichtet sind.
+      required: false
+      selector:
+        text:

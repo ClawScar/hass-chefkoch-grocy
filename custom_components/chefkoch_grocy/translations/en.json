@@ -1,0 +1,63 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Grocy",
+        "description": "Enter the address of your Grocy instance and an API key. Create the key in Grocy under Settings → Manage API keys.",
+        "data": {
+          "url": "Grocy URL",
+          "api_key": "API key"
+        },
+        "data_description": {
+          "url": "For example http://homeassistant.local:9283 or http://a0d7b954-grocy",
+          "api_key": "Grocy → Settings → Manage API keys"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Grocy rejected the API key.",
+      "cannot_connect": "Could not reach Grocy. Check the URL and the network.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This Grocy instance is already configured."
+    }
+  },
+  "selector": {
+    "existing": {
+      "options": {
+        "skip": "Keep existing recipe, skip import",
+        "overwrite": "Update the existing recipe",
+        "create": "Create a second recipe with the same name"
+      }
+    }
+  },
+  "services": {
+    "import_recipe": {
+      "name": "Import recipe",
+      "description": "Imports recipes from chefkoch.de into Grocy as recipes only (no products, no stock).",
+      "fields": {
+        "url": {
+          "name": "Chefkoch URL",
+          "description": "Recipe link. Separate multiple links with spaces or line breaks."
+        },
+        "existing": {
+          "name": "Existing recipe",
+          "description": "What to do when a recipe with the same name already exists."
+        },
+        "picture": {
+          "name": "Import picture",
+          "description": "Download the Chefkoch picture into Grocy."
+        },
+        "servings": {
+          "name": "Servings",
+          "description": "Override the servings stated on Chefkoch."
+        },
+        "entry_id": {
+          "name": "Grocy instance",
+          "description": "Only needed when several Grocy instances are configured."
+        }
+      }
+    }
+  }
+}

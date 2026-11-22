@@ -1,0 +1,63 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Grocy verbinden",
+        "description": "Adresse deiner Grocy-Instanz und einen API-Schlüssel eintragen. Den Schlüssel erstellst du in Grocy unter Einstellungen → API-Schlüssel verwalten.",
+        "data": {
+          "url": "Grocy-URL",
+          "api_key": "API-Schlüssel"
+        },
+        "data_description": {
+          "url": "Zum Beispiel http://homeassistant.local:9283 oder http://a0d7b954-grocy",
+          "api_key": "Grocy → Einstellungen → API-Schlüssel verwalten"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Grocy hat den API-Schlüssel abgelehnt.",
+      "cannot_connect": "Grocy ist nicht erreichbar. URL und Netzwerk prüfen.",
+      "unknown": "Unerwarteter Fehler."
+    },
+    "abort": {
+      "already_configured": "Diese Grocy-Instanz ist bereits eingerichtet."
+    }
+  },
+  "selector": {
+    "existing": {
+      "options": {
+        "skip": "Vorhandenes Rezept behalten, Import überspringen",
+        "overwrite": "Vorhandenes Rezept aktualisieren",
+        "create": "Zweites Rezept mit gleichem Namen anlegen"
+      }
+    }
+  },
+  "services": {
+    "import_recipe": {
+      "name": "Rezept von Chefkoch importieren",
+      "description": "Importiert Rezepte von chefkoch.de als reine Rezepte in Grocy (keine Produkte, kein Lagerbestand).",
+      "fields": {
+        "url": {
+          "name": "Chefkoch-URL",
+          "description": "Link zum Rezept. Mehrere Links durch Leerzeichen oder Zeilenumbrüche trennen."
+        },
+        "existing": {
+          "name": "Vorhandenes Rezept",
+          "description": "Verhalten, wenn bereits ein Rezept mit gleichem Namen existiert."
+        },
+        "picture": {
+          "name": "Titelbild übernehmen",
+          "description": "Rezeptbild von Chefkoch in Grocy ablegen."
+        },
+        "servings": {
+          "name": "Portionen",
+          "description": "Portionsangabe von Chefkoch überschreiben."
+        },
+        "entry_id": {
+          "name": "Grocy-Instanz",
+          "description": "Nur nötig, wenn mehrere Grocy-Instanzen eingerichtet sind."
+        }
+      }
+    }
+  }
+}
