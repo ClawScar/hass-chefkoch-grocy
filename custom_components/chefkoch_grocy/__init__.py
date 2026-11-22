@@ -40,6 +40,9 @@ _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[str] = []
 
+# Only config entries are supported; this keeps hassfest happy about async_setup.
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
+
 SERVICE_SCHEMA = vol.Schema(
     {
         vol.Required(ATTR_URL): cv.string,
