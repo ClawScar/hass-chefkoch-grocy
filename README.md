@@ -11,7 +11,7 @@ Lagerbestände** in Grocy erzeugt – genau so, wie es für eine reine Rezeptsam
 - Einrichtung komplett über die Home-Assistant-Oberfläche (Config Flow, kein YAML)
 - Service `chefkoch_grocy.import_recipe` – eine oder mehrere URLs in einem Aufruf
 - mitgelieferte Lovelace-Karte `custom:chefkoch-grocy-card`: URL einfügen, Button drücken, fertig
-- Zutaten + Zubereitung als Markdown-Beschreibung, Basisportionen aus dem Rezept
+- Zutaten + Zubereitung als HTML-Beschreibung (Überschriften, Info-Block und Listen), Basisportionen aus dem Rezept
 - Titelbild wird optional nach Grocy geladen
 - Duplikat-Behandlung: überspringen / aktualisieren / zweites Rezept anlegen
 - `not_check_shoppinglist` wird gesetzt, damit Grocy nicht nach fehlenden Zutaten fragt
@@ -106,31 +106,43 @@ antwortet). Schlägt jede URL fehl, wird der Service mit einer Fehlermeldung abg
 
 - **Name**: Rezepttitel von Chefkoch
 - **Basisportionen / gewünschte Portionen**: Portionsangabe des Rezepts (Standard 4)
-- **Beschreibung**: Markdown mit Kurzbeschreibung, Zeit, Kategorie, Autor, Quellenlink,
-  Zutatenliste und nummerierter Zubereitung
+- **Beschreibung**: HTML mit Titel, Info-Block (Portionen, Gesamtzeit, Schwierigkeit),
+  Kurzbeschreibung, Zutatenliste, nummerierter Zubereitung und Quellenlink
 - **Bild**: optional, abgelegt unter `data/storage/recipes/`
 - **Typ**: `normal`
 - **Rezeptpositionen**: keine – dadurch entstehen keine Produkte und keine Lagerbuchungen
 
 Beispiel-Beschreibung:
 
-```markdown
-Klassische Käsespätzle wie bei Oma – einfach und cremig.
+```html
+<div class="container">
+  <h1>Käsespätzle</h1>
+  <div class="info">
+  <strong>Portionen:</strong> 4<br>
+  <strong>Gesamtzeit:</strong> 50 Min.<br>
+  </div>
+  <p>Klassische Käsespätzle wie bei Oma – einfach und cremig.</p>
 
-**Zeit:** 50 Min.
-**Portionen:** 4
-**Kategorie:** Aufläufe
-**Quelle:** [chefkoch.de](https://www.chefkoch.de/rezepte/15845/Kaesespaetzle.html)
+  <h2>Zutaten</h2>
+  <ul>
+    <li>500 g Mehl</li>
+    <li>4 Eier</li>
+    <li>200 g Bergkäse, gerieben</li>
+  </ul>
 
-## Zutaten (4 Portionen)
-- 500 g Mehl
-- 4 Eier
-- 200 g Bergkäse, gerieben
+  <h2>Zubereitung</h2>
+  <h3>Spätzle</h3>
+  <ol>
+    <li>Mehl, Eier und Salz zu einem zähen Teig verkneten.</li>
+    <li>Teig portionsweise ins kochende Wasser schaben.</li>
+  </ol>
+  <h3>Überbacken</h3>
+  <ol>
+    <li>Schichten, mit Käse bestreuen und überbacken.</li>
+  </ol>
 
-## Zubereitung
-1. Mehl, Eier und Salz zu einem zähen Teig verkneten.
-2. Teig portionsweise ins kochende Wasser schaben.
-3. Schichten, mit Käse bestreuen und überbacken.
+  <p><small>Quelle: <a href="https://www.chefkoch.de/rezepte/15845/Kaesespaetzle.html">chefkoch.de</a></small></p>
+</div>
 ```
 
 ## Hinweise und Grenzen
