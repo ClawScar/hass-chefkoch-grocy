@@ -9,7 +9,7 @@
           "api_key": "API-Schlüssel"
         },
         "data_description": {
-          "url": "Zum Beispiel http://homeassistant.local:9283 oder http://a0d7b954-grocy",
+          "url": "Adresse der Grocy-Instanz inklusive Port, zum Beispiel der interne Add-on-Hostname",
           "api_key": "Grocy → Einstellungen → API-Schlüssel verwalten"
         }
       }
