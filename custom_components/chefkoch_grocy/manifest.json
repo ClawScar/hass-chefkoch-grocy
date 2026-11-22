@@ -1,0 +1,13 @@
+{
+  "domain": "chefkoch_grocy",
+  "name": "Chefkoch to Grocy",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["frontend", "http"],
+  "documentation": "https://github.com/ClawScar/hass-chefkoch-grocy#readme",
+  "integration_type": "service",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/ClawScar/hass-chefkoch-grocy/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}
