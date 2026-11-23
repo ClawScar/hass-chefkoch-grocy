@@ -108,7 +108,8 @@ antwortet). Schlägt jede URL fehl, wird der Service mit einer Fehlermeldung abg
 - **Basisportionen / gewünschte Portionen**: Portionsangabe des Rezepts (Standard 4)
 - **Beschreibung**: HTML mit Titel, Info-Block (Portionen, Gesamtzeit, Schwierigkeit),
   Kurzbeschreibung, Zutatenliste, nummerierter Zubereitung und Quellenlink
-- **Bild**: optional, abgelegt unter `data/storage/recipes/`
+- **Bild**: optional, als Grocy-Rezeptbild in der Dateigruppe `recipepictures`
+  (`data/storage/recipepictures/`) – Grocy zeigt es in der Rezeptansicht und in der Galerie an
 - **Typ**: `normal`
 - **Rezeptpositionen**: keine – dadurch entstehen keine Produkte und keine Lagerbuchungen
 

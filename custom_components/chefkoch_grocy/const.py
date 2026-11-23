@@ -4,7 +4,7 @@ from __future__ import annotations
 
 DOMAIN = "chefkoch_grocy"
 NAME = "Chefkoch → Grocy"
-VERSION = "1.0.5"
+VERSION = "1.0.6"
 
 CONF_URL = "url"
 CONF_API_KEY = "api_key"
@@ -23,6 +23,8 @@ EXISTING_CREATE = "create"
 EXISTING_OPTIONS = [EXISTING_SKIP, EXISTING_OVERWRITE, EXISTING_CREATE]
 
 DEFAULT_IMPORT_PICTURE = True
+# Grocy serves recipe pictures from this storage group (data/storage/recipepictures).
+GROCY_RECIPE_PICTURE_GROUP = "recipepictures"
 REQUEST_TIMEOUT = 25
 
 FRONTEND_URL = "/chefkoch_grocy/chefkoch-grocy-card.js"

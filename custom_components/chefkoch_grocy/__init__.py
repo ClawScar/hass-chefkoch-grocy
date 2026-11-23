@@ -26,6 +26,7 @@ from .const import (
     ATTR_URL,
     DEFAULT_IMPORT_PICTURE,
     DOMAIN,
+    GROCY_RECIPE_PICTURE_GROUP,
     EXISTING_OPTIONS,
     EXISTING_OVERWRITE,
     EXISTING_SKIP,
@@ -263,7 +264,9 @@ async def _async_attach_picture(
         return
     content, content_type = image
     file_name = _picture_file_name(recipe.name, content_type)
-    await client.async_upload_file("recipes", file_name, content, content_type)
+    await client.async_upload_file(
+        GROCY_RECIPE_PICTURE_GROUP, file_name, content, content_type
+    )
     await client.async_update_recipe(recipe_id, {"picture_file_name": file_name})
 
 
